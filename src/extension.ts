@@ -17,15 +17,24 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('annotator.start', () => {
+
+		if (!vscode.window.activeTextEditor || !vscode.window.activeTextEditor.selections[0]) {
+			vscode.window.showInformationMessage("Please open a file and select some code to annotate.");
+			return;
+		}
+
 		const panel = vscode.window.createWebviewPanel(
 			'annotator',
 			'Annotator',
-			vscode.ViewColumn.Two,
+			vscode.ViewColumn.One,
 			{ enableScripts: true }
 		);
 
 		panel.webview.html = getWebviewContent(context.extensionPath, panel);
-
+		vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
+		panel.webview.postMessage({
+			command: 'init'
+		});
 
 
 		vscode.window.onDidChangeTextEditorSelection(e => {
@@ -52,10 +61,7 @@ function getWebviewContent(extensionPath: string, panel: vscode.WebviewPanel) {
 	const nonce = getNonce();
 
 	const scriptPathOnDisk = vscode.Uri.file(path.join(extensionPath, 'src', 'webview', 'index.js'));
-	console.log(scriptPathOnDisk)
 	const scriptUri = panel.webview.asWebviewUri(scriptPathOnDisk);
-	console.log(scriptUri);
-
 
 	return `<!DOCTYPE html>
 	<html lang="en">
@@ -67,10 +73,12 @@ function getWebviewContent(extensionPath: string, panel: vscode.WebviewPanel) {
 			-->
 			<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} https:; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>Cat Coding</title>
+			<title>Annotator</title>
 	</head>
-	<body>
-			<h1>0</h1>
+	<body style="height: 100vh;">
+			<div id="container" style="box-sizing: border-box; padding: 30px;">
+				<div id="snippet"></div>
+			</div>
 			<script nonce="${nonce}" src="${scriptUri}"></script>
 	</body>
 	</html>`;
