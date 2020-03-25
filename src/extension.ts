@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "editor-annotator" is now active!');
-
+	let currentPanel: vscode.WebviewPanel | undefined = undefined;
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -23,26 +23,39 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		const panel = vscode.window.createWebviewPanel(
-			'annotator',
-			'Annotator',
-			vscode.ViewColumn.One,
-			{ enableScripts: true }
-		);
+		const activeColumn = vscode.window.activeTextEditor
+			? vscode.window.activeTextEditor.viewColumn
+			: undefined;
 
-		panel.webview.html = getWebviewContent(context.extensionPath, panel);
-		vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
-		panel.webview.postMessage({
-			command: 'init'
-		});
+		if (currentPanel) {
+			currentPanel.reveal();
+		} else {
+			currentPanel = vscode.window.createWebviewPanel(
+				'annotator',
+				'Annotator',
+				vscode.ViewColumn.One,
+				{ enableScripts: true }
+			);
 
+			currentPanel.webview.html = getWebviewContent(context.extensionPath, currentPanel);
+			vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
+			currentPanel.webview.postMessage({
+				command: 'init'
+			});
 
-		vscode.window.onDidChangeTextEditorSelection(e => {
-			if (e.selections[0] && !e.selections[0].isEmpty) {
-				vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
-				panel.webview.postMessage({ command: 'updateSelection' });
-			}
-		});
+			currentPanel.onDidDispose(
+				() => currentPanel = undefined,
+				null,
+				context.subscriptions
+			);
+
+			vscode.window.onDidChangeTextEditorSelection(e => {
+				if (e.selections[0] && !e.selections[0].isEmpty) {
+					vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
+					currentPanel!.webview.postMessage({ command: 'updateSelection' });
+				}
+			});
+		}
 	});
 
 	context.subscriptions.push(disposable);
