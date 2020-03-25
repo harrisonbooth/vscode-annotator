@@ -88,7 +88,8 @@
   });
 
   document.addEventListener('paste', e => {
-    const innerHTML = e.clipboardData.getData('text/html');
+    let innerHTML = e.clipboardData.getData('text/html');
+    if (!innerHTML) { innerHTML = e.clipboardData.getData('text/plain'); };
     snippet.innerHTML = innerHTML;
   });
 

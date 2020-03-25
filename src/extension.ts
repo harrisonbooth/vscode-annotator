@@ -29,6 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (currentPanel) {
 			currentPanel.reveal();
+
+			vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
+			currentPanel.webview.postMessage({
+				command: 'init'
+			});
 		} else {
 			currentPanel = vscode.window.createWebviewPanel(
 				'annotator',
