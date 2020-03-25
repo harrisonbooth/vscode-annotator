@@ -1,21 +1,12 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
 import * as path from 'path';
 import * as fs from 'fs';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "editor-annotator" is now active!');
 	let currentPanel: vscode.WebviewPanel | undefined = undefined;
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
+
 	let disposable = vscode.commands.registerCommand('annotator.start', () => {
 
 		if (!vscode.window.activeTextEditor || !vscode.window.activeTextEditor.selections[0]) {
@@ -57,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.onDidChangeTextEditorSelection(e => {
 				if (e.selections[0] && !e.selections[0].isEmpty) {
 					vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
+					console.log("sending update");
 					currentPanel!.webview.postMessage({ command: 'updateSelection' });
 				}
 			});
@@ -102,5 +94,4 @@ function getWebviewContent(extensionPath: string, panel: vscode.WebviewPanel) {
 	</html>`;
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() { }
