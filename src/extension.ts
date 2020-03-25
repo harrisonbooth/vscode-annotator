@@ -4,10 +4,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import AnnotatorSerializer from './AnnotatorSerializer';
+import { AnnotatorProvider } from './AnnotatorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	const annotatorWebview = new AnnotatorSerializer(context, vscode.window.activeTextEditor);
+	const annotatorWebview = new AnnotatorSerializer(context);
+
+	const annotatorProvider = new AnnotatorProvider();
+	vscode.window.registerTreeDataProvider('annotator', annotatorProvider);
 
 	let disposable = vscode.commands.registerCommand('annotator.start', () => {
 		annotatorWebview.init();

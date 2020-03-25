@@ -10,6 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onView:annotator",
 		"onCommand:annotator.start",
 		"onWebviewPanel:annotator"
 	],
@@ -18,9 +19,36 @@
 		"commands": [
 			{
 				"command": "annotator.start",
-				"title": "Open annotator"
+				"title": "Open annotator",
+				"icon": "src/plus.svg"
 			}
-		]
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "annotator.start",
+					"when": "view == annotator",
+					"group": "navigation"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "annotator",
+					"title": "Annotator Controls",
+					"icon": "src/edit.svg"
+				}
+			]
+		},
+		"views": {
+			"annotator": [
+				{
+					"id": "annotator",
+					"name": "Controls"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
