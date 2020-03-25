@@ -18,7 +18,7 @@
 		"commands": [
 			{
 				"command": "annotator.start",
-				"title": "Start Annotating"
+				"title": "Open annotator"
 			}
 		]
 	},

@@ -16,36 +16,27 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
   init() {
     if (!this.panel) {
       this.createPanel();
-      this.initializeSelection();
     } else {
       this.reveal();
-      this.initializeSelection();
     }
-  }
-
-  get activeColumn(): vscode.ViewColumn | undefined {
-    return vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
-  }
-
-  initializeSelection() {
-    if (!this.panel) return;
-
-    vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
-    this.panel.webview.postMessage({
-      command: 'init'
-    });
   }
 
   createPanel() {
     this.panel = vscode.window.createWebviewPanel(
       'annotator',
       'Annotator',
-      vscode.ViewColumn.One,
+      vscode.ViewColumn.Beside,
       { enableScripts: true, retainContextWhenHidden: true }
     );
     this.panel.webview.html = this.getWebviewContent();
+
+    this.panel.webview.onDidReceiveMessage(message => {
+      switch (message.command) {
+        case 'loaded':
+          this.initializeOnSelectionChange();
+          break;
+      }
+    });
 
     this.panel.onDidDispose(
       () => this.panel = undefined,
@@ -68,8 +59,7 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
   }
 
   async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any): Promise<void> {
-    if (!this.panel) return;
-
+    this.panel = webviewPanel;
     webviewPanel.webview.html = this.getWebviewContent();
   }
 
@@ -95,7 +85,7 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
 		</head>
 		<body style="height: 100vh;">
 				<div id="container" style="box-sizing: border-box; padding: 30px;">
-					<div id="snippet"></div>
+					<div id="snippet">Select some code.</div>
 				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 		</body>
