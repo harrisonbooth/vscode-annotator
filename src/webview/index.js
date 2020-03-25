@@ -1,35 +1,45 @@
 // const domToimage = require('dom-to-image');
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
   const container = document.querySelector('#container');
   const snippet = document.querySelector('#snippet');
 
-  const canvas = document.createElement('canvas');
-  canvas.setAttribute('width', `${document.body.offsetWidth}`);
-  canvas.setAttribute('height', `${document.body.offsetHeight}`);
-  // canvas.style.backgroundColor = "rgba(255,255,255,0.4)";
-  canvas.style.position = "fixed";
-  canvas.style.top = "0";
-  canvas.style.left = "0";
-  container.appendChild(canvas);
+  const mainCanvas = document.createElement('canvas');
+  mainCanvas.setAttribute('width', `${document.body.offsetWidth}`);
+  mainCanvas.setAttribute('height', `${document.body.offsetHeight}`);
+  // mainCanvas.style.backgroundColor = "rgba(255,255,255,0.4)";
+  mainCanvas.style.position = "fixed";
+  mainCanvas.style.top = "0";
+  mainCanvas.style.left = "0";
+  mainCanvas.style.zIndex = "50";
+  container.appendChild(mainCanvas);
 
-  let draw = false;
+  const shadowCanvas = document.createElement('canvas');
+  shadowCanvas.setAttribute('width', `${document.body.offsetWidth}`);
+  shadowCanvas.setAttribute('height', `${document.body.offsetHeight}`);
+  shadowCanvas.style.position = "fixed";
+  shadowCanvas.style.top = "0";
+  shadowCanvas.style.left = "0";
+  shadowCanvas.style.zIndex = "100";
+  container.appendChild(shadowCanvas);
+
   let pointA = null;
   let pointB = null;
 
-  const context = canvas.getContext("2d");
+  const context = mainCanvas.getContext("2d");
+  const shadowContext = shadowCanvas.getContext("2d");
 
-  function drawLine() {
+  function drawLine(context, { x: x1, y: y1 }, { x: x2, y: y2 }) {
     context.beginPath();
     context.lineWidth = 3;
     context.strokeStyle = 'red';
     context.lineCap = "round";
-    context.moveTo(pointA.x, pointA.y);
-    context.lineTo(pointB.x, pointB.y);
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
     context.stroke();
   }
 
-  canvas.addEventListener('click', e => {
+  shadowCanvas.addEventListener('click', e => {
     const x = e.clientX;
     const y = e.clientY;
 
@@ -38,15 +48,35 @@ document.addEventListener('DOMContentLoaded', () => {
       pointB = null;
     } else if (pointA && !pointB) {
       pointB = { x, y };
-      drawLine();
+      drawLine(context, pointA, pointB);
       pointA = pointB = null;
     }
 
   });
 
-  canvas.addEventListener('contextmenu', e => {
+  shadowCanvas.addEventListener('click', e => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    if (pointA && !pointB) {
+      shadowContext.clearRect(0, 0, shadowCanvas.width, shadowCanvas.height);
+      drawLine(shadowContext, pointA, { x, y });
+    }
+  });
+
+  shadowCanvas.addEventListener('mousemove', e => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    if (pointA && !pointB) {
+      shadowContext.clearRect(0, 0, shadowCanvas.width, shadowCanvas.height);
+      drawLine(shadowContext, pointA, { x, y });
+    }
+  });
+
+  shadowCanvas.addEventListener('contextmenu', e => {
     e.preventDefault();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    shadowContext.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
   });
 
   document.addEventListener('paste', e => {
@@ -65,5 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
     }
   });
-});
 
+
+}())
