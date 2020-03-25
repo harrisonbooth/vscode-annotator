@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:annotator.start"
+		"onCommand:annotator.start",
+		"onWebviewPanel:annotator"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
