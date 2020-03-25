@@ -76,7 +76,15 @@
 
   shadowCanvas.addEventListener('contextmenu', e => {
     e.preventDefault();
+
     shadowContext.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+    if (pointA && !pointB) {
+      pointA = null;
+    } else {
+      shadowContext.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+      context.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    }
   });
 
   document.addEventListener('paste', e => {
