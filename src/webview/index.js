@@ -97,12 +97,9 @@
     const message = e.data;
     switch (message.command) {
       case 'init':
-        console.log("initing");
-
         document.execCommand('paste');
         break;
       case 'updateSelection':
-        console.log("being updated");
         document.execCommand('paste');
         break;
     }

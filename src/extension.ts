@@ -48,7 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.onDidChangeTextEditorSelection(e => {
 				if (e.selections[0] && !e.selections[0].isEmpty) {
 					vscode.commands.executeCommand('editor.action.clipboardCopyWithSyntaxHighlightingAction');
-					console.log("sending update");
 					currentPanel!.webview.postMessage({ command: 'updateSelection' });
 				}
 			});
