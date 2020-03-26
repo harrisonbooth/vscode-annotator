@@ -24,7 +24,7 @@
 				"icon": "src/plus.svg"
 			},
 			{
-				"command": "annotator.changeColour",
+				"command": "annotator.changeColourCustom",
 				"title": "Change annotator colour"
 			}
 		],
@@ -50,7 +50,11 @@
 			"annotator": [
 				{
 					"id": "annotator",
-					"name": "Controls"
+					"name": "Basic Controls"
+				},
+				{
+					"id": "annotator-colours",
+					"name": "Colour Picker"
 				}
 			]
 		}

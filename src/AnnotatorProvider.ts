@@ -27,6 +27,4 @@ class AnnotatorOption extends vscode.TreeItem {
   ) {
     super(label, collabsibleState);
   }
-
-
 }
