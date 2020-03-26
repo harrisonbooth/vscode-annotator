@@ -23,7 +23,6 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
 
   changeColour(colour: string) {
     if (!this.panel) return;
-    console.log("Changing to", colour);
 
     this.panel.webview.postMessage({ command: "changeColour", colour });
   }

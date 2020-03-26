@@ -144,7 +144,6 @@ function doIt() {
         break;
       case 'changeColour':
         canvasManager.setColour(message.colour);
-        console.log("changed to", message.colour);
         break;
     }
   });
