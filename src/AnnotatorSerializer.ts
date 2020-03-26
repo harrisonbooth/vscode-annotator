@@ -21,6 +21,13 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
     }
   }
 
+  changeColour(colour: string) {
+    if (!this.panel) return;
+    console.log("Changing to", colour);
+
+    this.panel.webview.postMessage({ command: "changeColour", colour });
+  }
+
   createPanel() {
     this.panel = vscode.window.createWebviewPanel(
       'annotator',
@@ -59,8 +66,7 @@ export default class AnnotatorSerializer implements vscode.WebviewPanelSerialize
   }
 
   async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any): Promise<void> {
-    this.panel = webviewPanel;
-    webviewPanel.webview.html = this.getWebviewContent();
+    this.init();
   }
 
   getWebviewContent() {

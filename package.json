@@ -12,7 +12,8 @@
 	"activationEvents": [
 		"onView:annotator",
 		"onCommand:annotator.start",
-		"onWebviewPanel:annotator"
+		"onWebviewPanel:annotator",
+		"onCommand:annotator.changeColour"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -21,6 +22,10 @@
 				"command": "annotator.start",
 				"title": "Open annotator",
 				"icon": "src/plus.svg"
+			},
+			{
+				"command": "annotator.changeColour",
+				"title": "Change annotator colour"
 			}
 		],
 		"menus": {

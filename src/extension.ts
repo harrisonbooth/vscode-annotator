@@ -13,13 +13,34 @@ export function activate(context: vscode.ExtensionContext) {
 	const annotatorProvider = new AnnotatorProvider();
 	vscode.window.registerTreeDataProvider('annotator', annotatorProvider);
 
-	let disposable = vscode.commands.registerCommand('annotator.start', () => {
+	const disposable = vscode.commands.registerCommand('annotator.start', () => {
 		annotatorWebview.init();
 	});
 
-	context.subscriptions.push(disposable);
+	const colourCommand = vscode.commands.registerCommand(
+		'annotator.changeColour',
+		(colour: string) => {
+			const options: vscode.InputBoxOptions = {
+				ignoreFocusOut: true,
+				placeHolder: "Red",
+				prompt: "Enter a Hex colour value or a valid HTML colour name.",
+				value: "red"
+			};
+			vscode.window.showInputBox(options)
+				.then(colour => {
+					if (!colour) {
+						vscode.window.showInformationMessage("Something went wrong!")
+						return;
+					};
 
-	vscode.window.registerWebviewPanelSerializer('annotator', annotatorWebview);
+					annotatorWebview.changeColour(colour);
+				})
+		}
+	);
+
+	context.subscriptions.push(disposable, colourCommand);
+
+	// vscode.window.registerWebviewPanelSerializer('annotator', annotatorWebview);
 }
 
 export function deactivate() { }
